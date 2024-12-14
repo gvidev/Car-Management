@@ -1,2 +1,2 @@
 # Car Management
- this project is part of university discipline "Web Server Programming" in the 4-th year ot my study. 
+ This project is part of the university course "Web Server Programming" in my 4-th year of study.
