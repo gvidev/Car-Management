@@ -4,7 +4,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from repo.databaseConfig import engine
 from repo.models import Base
 from routers.garage_router import garage_router
-
+from routers.car_router import car_router
 def lifespan(app: FastAPI):
     Base.metadata.create_all(engine)
     yield
@@ -27,3 +27,4 @@ async def root():
 
 
 app.include_router(garage_router,prefix="/garages", tags=["Garage API"])
+app.include_router(car_router,prefix="/cars", tags=["Cars API"])
