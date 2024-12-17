@@ -1,8 +1,8 @@
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
-from databaseConfig import engine
-from models import Base
+from repo.databaseConfig import engine
+from repo.models import Base
 from routers.garage_router import garage_router
 
 def lifespan(app: FastAPI):
