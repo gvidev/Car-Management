@@ -34,7 +34,7 @@ def update_car(car_id:int , car: UpdateCarDTO) -> ResponseCarDTO:
         newCar.model = car.model
         newCar.productionYear = car.productionYear
         newCar.licensePlate = car.licensePlate
-        newCar.garages = get_garages_by_ids(garage_ids=car.garageIds)
+        newCar.garages = get_garages_by_ids(car.garageIds,session)
         session.commit()
         session.refresh(newCar)
 
@@ -54,13 +54,15 @@ def create_car(car: CreateCarDTO) -> ResponseCarDTO:
         session.refresh(newCar)
     return map_car_to_response(newCar)
 
+
 def get_cars(filters: CarsFilter) -> list[ResponseCarDTO]:
     with Session() as session:
-        query =session.query(Car)
+        query = session.query(Car)
         if filters.carMake:
-            query = query.filter(Car.make == filters.carMake)
+            search_car_make =f"%{filters.carMake.upper()}%"
+            query = query.filter(Car.make.like(search_car_make))
         if filters.garageId:
-            query = query.filter(Car.garageIds.any(id=filters.garageId))
+            query = query.join(CarGarage).filter(CarGarage.garage_id == filters.garageId)
         if filters.fromYear:
             query = query.filter(Car.productionYear >= filters.fromYear)
         if filters.toYear:
