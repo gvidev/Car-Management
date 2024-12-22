@@ -7,6 +7,10 @@ from dtos.garage_dtos import ResponseGarageDTO, UpdateGarageDTO, CreateGarageDTO
 from repo.models import Garage
 from sqlalchemy.orm import Session as ORMSession
 
+def get_garages_by_ids(garage_ids:list[int])\
+        -> list[Garage]:
+    with Session() as session:
+        return session.query(Garage).filter(Garage.id.in_(garage_ids)).all()
 
 def get_garage_by_id(id:int, session: ORMSession):
     garage = session.get(Garage,id)

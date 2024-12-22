@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from repo.databaseConfig import engine
@@ -12,8 +13,7 @@ def lifespan(app: FastAPI):
 app = FastAPI(lifespan=lifespan)
 # added because of the cross-origin access is blocked
 # by third party client
-origins = [ "http://localhost:3000",
-            "http://192.168.100.3:3000",
+origins = ["http://192.168.100.3:3000",
             "http://localhost:8088", ]
 
 app.add_middleware(
@@ -33,3 +33,8 @@ app.include_router(garage_router,prefix="/garages", tags=["garage-controller"])
 app.include_router(car_router,prefix="/cars", tags=["car-controller"])
 
 app.include_router(maintenance_router,prefix="/maintenance", tags=["maintenance-controller"])
+
+
+# get used of debugging function possibilities
+if __name__ == "__main__":
+    uvicorn.run(app, host="127.0.0.1", port=8088)

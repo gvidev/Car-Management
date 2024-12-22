@@ -5,9 +5,9 @@ from pydantic import BaseModel
 
 from dtos.car_dtos import CreateCarDTO, ResponseCarDTO, UpdateCarDTO
 from repo.databaseConfig import Session
-from sqlalchemy.orm import Session as ORMSession
-from repo.models import Car, car_garage_association, Garage
-from services.garage_service import map_garage_to_response, get_garage
+from sqlalchemy.orm import Session as ORMSession, joinedload
+from repo.models import Car, Garage, CarGarage
+from services.garage_service import map_garage_to_response, get_garage, get_garages_by_ids, get_garage_by_id
 
 
 class CarsFilter(BaseModel):
@@ -34,7 +34,7 @@ def update_car(car_id:int , car: UpdateCarDTO) -> ResponseCarDTO:
         newCar.model = car.model
         newCar.productionYear = car.productionYear
         newCar.licensePlate = car.licensePlate
-        newCar.garages = car.garageIds
+        newCar.garages = get_garages_by_ids(garage_ids=car.garageIds)
         session.commit()
         session.refresh(newCar)
 
@@ -76,19 +76,10 @@ def map_create_to_car(car: CreateCarDTO) -> Car:
         make=car.make,
         model=car.model,
         productionYear=car.productionYear,
-        licensePlate=car.licensePlate,
+        licensePlate=car.licensePlate
     )
-    newCar.garages = map_garage_ids_to_garages(car.garageIds)
+    newCar.garages = get_garages_by_ids(garage_ids=car.garageIds)
     return newCar
-
-
-def map_garage_ids_to_garages(garageIds:list[int],session: ORMSession) \
-        -> list[Garage]:
-    garages = session.query(Garage).filter(Garage.id.in_(garageIds)).all()
-    return garages
-
-def map_garages_to_response_garages(garages:list[Garage]):
-    return [map_garage_to_response(garage) for garage in garages]
 
 def map_car_to_response(car: Car) -> ResponseCarDTO:
     return ResponseCarDTO(
@@ -97,5 +88,6 @@ def map_car_to_response(car: Car) -> ResponseCarDTO:
         model=car.model,
         productionYear=car.productionYear,
         licensePlate=car.licensePlate,
-        garages = map_garages_to_response_garages(car.garages)
+        garages = [map_garage_to_response(garage) for garage in car.garages]
     )
+

@@ -25,6 +25,7 @@ async def delete_single_car(id: int):
 @car_router.get("", response_model=list[ResponseCarDTO])
 async def get_all_cars(query_filters: Annotated[CarsFilter,Query()]):
      return get_cars(query_filters)
+
 @car_router.post("", response_model=ResponseCarDTO)
 async def create_new_car(car: CreateCarDTO):
      return create_car(car)
