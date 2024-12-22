@@ -2,6 +2,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from repo.databaseConfig import engine
 from repo.models import Base
+from routers.maintenance_router import maintenance_router
 from routers.garage_router import garage_router
 from routers.car_router import car_router
 
@@ -30,3 +31,5 @@ async def root():
 
 app.include_router(garage_router,prefix="/garages", tags=["garage-controller"])
 app.include_router(car_router,prefix="/cars", tags=["car-controller"])
+
+app.include_router(maintenance_router,prefix="/maintenance", tags=["maintenance-controller"])
