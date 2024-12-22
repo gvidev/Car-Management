@@ -2,7 +2,7 @@ from datetime import date
 
 from fastapi import APIRouter
 
-from dtos.garage_dtos import ResponseGarageDTO, UpdateGarageDTO, CreateGarageDTO
+from dtos.garage_dtos import ResponseGarageDTO, UpdateGarageDTO, CreateGarageDTO, GarageDailyAvailabilityReportDTO
 from services.garage_service import get_garages, create_garage, delete_garage, get_garage, update_garage, \
      get_garage_daily_availability
 
@@ -28,6 +28,6 @@ async def update_single_garage(id: int, garage: UpdateGarageDTO):
 async def delete_single_garage(id:int):
      return delete_garage(id)
 
-@garage_router.get("/dailyAvailabilityReport")
+@garage_router.get("/dailyAvailabilityReport", response_model=GarageDailyAvailabilityReportDTO)
 async def get_daily_availability_report(garageId:int,startDate:date,endDate:date):
      return get_garage_daily_availability(garageId,startDate,endDate)

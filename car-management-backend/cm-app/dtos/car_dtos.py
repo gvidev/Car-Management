@@ -18,9 +18,9 @@ class UpdateCarDTO(BaseModel):
     garageIds:list[int] = Field(None)
 
 class ResponseCarDTO(BaseModel):
-    id:int
-    make:str
-    model:str
-    productionYear: int
-    licensePlate:str
-    garages:list[ResponseGarageDTO]
+    id:int = Field(None)
+    make:str = Field(None)
+    model:str = Field(None)
+    productionYear: int = Field(None)
+    licensePlate:str = Field(None)
+    garages:list[ResponseGarageDTO] = Field(None)

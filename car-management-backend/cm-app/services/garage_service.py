@@ -3,7 +3,7 @@ from datetime import date
 from fastapi import HTTPException
 
 from repo.databaseConfig import Session
-from dtos.garage_dtos import ResponseGarageDTO, UpdateGarageDTO, CreateGarageDTO
+from dtos.garage_dtos import ResponseGarageDTO, UpdateGarageDTO, CreateGarageDTO, GarageDailyAvailabilityReportDTO
 from repo.models import Garage
 from sqlalchemy.orm import Session as ORMSession
 
@@ -66,8 +66,12 @@ def delete_garage(id: int) -> bool:
         session.delete(garage)
         return True
 
-def get_garage_daily_availability(garage_id:int, start_date:date, end_date:date):
-    pass
+def get_garage_daily_availability(garage_id:int, start_date:date, end_date:date)\
+        -> GarageDailyAvailabilityReportDTO:
+    with Session() as session:
+        garage = get_garage_by_id(garage_id, session)
+        pass
+
 
 def map_garage_to_response(garage: Garage) -> ResponseGarageDTO:
     return ResponseGarageDTO(

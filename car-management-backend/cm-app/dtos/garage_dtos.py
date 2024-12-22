@@ -23,6 +23,6 @@ class UpdateGarageDTO(BaseModel):
     capacity: int = Field(None)
 
 class GarageDailyAvailabilityReportDTO(BaseModel):
-    date: datetime
-    requests: int
-    availableCapacity:int
+    date: datetime = Field(None)
+    requests: int = Field(None)
+    availableCapacity:int = Field(None)
