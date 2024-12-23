@@ -8,6 +8,12 @@ from services.garage_service import get_garages, create_garage, delete_garage, g
 
 garage_router = APIRouter()
 
+# should be up here because if its below will match the get method
+# of garages/{id} and it will interpret it like path param
+@garage_router.get("/dailyAvailabilityReport", response_model=list[GarageDailyAvailabilityReportDTO])
+async def get_daily_availability_report(garageId:int,startDate:date,endDate:date):
+     return get_garage_daily_availability(garageId,startDate,endDate)
+
 @garage_router.get("/{id}", response_model=ResponseGarageDTO)
 async def get_single_garage(id: int):
      return get_garage(id)
@@ -28,6 +34,3 @@ async def update_single_garage(id: int, garage: UpdateGarageDTO):
 async def delete_single_garage(id:int):
      return delete_garage(id)
 
-@garage_router.get("/dailyAvailabilityReport", response_model=GarageDailyAvailabilityReportDTO)
-async def get_daily_availability_report(garageId:int,startDate:date,endDate:date):
-     return get_garage_daily_availability(garageId,startDate,endDate)

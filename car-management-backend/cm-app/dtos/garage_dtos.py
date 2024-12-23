@@ -1,5 +1,4 @@
 from datetime import date
-from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -24,6 +23,7 @@ class UpdateGarageDTO(BaseModel):
     capacity: int = Field(None)
 
 class GarageDailyAvailabilityReportDTO(BaseModel):
-    date: Optional[date] = None
+    reportDate:date = Field(None, alias="date") # Using 'date' as the field name needs to be with alias
+    # or it will return FieldInfo build error because the 'date' is used by pydantic 
     requests: int = Field(None)
     availableCapacity:int = Field(None)
