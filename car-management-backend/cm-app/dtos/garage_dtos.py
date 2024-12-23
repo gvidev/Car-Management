@@ -1,4 +1,5 @@
-from datetime import datetime
+from datetime import date
+from typing import Optional
 
 from pydantic import BaseModel, Field
 
@@ -23,6 +24,6 @@ class UpdateGarageDTO(BaseModel):
     capacity: int = Field(None)
 
 class GarageDailyAvailabilityReportDTO(BaseModel):
-    date: datetime = Field(None)
+    date: Optional[date] = None
     requests: int = Field(None)
     availableCapacity:int = Field(None)

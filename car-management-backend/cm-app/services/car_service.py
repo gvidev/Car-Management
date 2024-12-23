@@ -5,7 +5,7 @@ from pydantic import BaseModel
 
 from dtos.car_dtos import CreateCarDTO, ResponseCarDTO, UpdateCarDTO
 from repo.databaseConfig import Session
-from sqlalchemy.orm import Session as ORMSession, joinedload
+from sqlalchemy.orm import Session as ORMSession
 from repo.models import Car, Garage, CarGarage
 from services.garage_service import map_garage_to_response, get_garage, get_garages_by_ids, get_garage_by_id
 
@@ -16,11 +16,19 @@ class CarsFilter(BaseModel):
     fromYear: Optional[int] = None
     toYear: Optional[int] = None
 
-def get_car_by_id(car_id:int, session: ORMSession):
-    car = session.get(Car, car_id)
-    if car is None:
-        raise HTTPException(status_code=404, detail="Car not found")
-    return car
+def get_car_by_id(car_id:int, session: ORMSession = None):
+    if session is None:
+        with Session() as session:
+            car = session.get(Car, car_id)
+            if car is None:
+                raise HTTPException(status_code=404, detail="Car not found")
+            return car
+    else:
+        car = session.get(Car, car_id)
+        if car is None:
+            raise HTTPException(status_code=404, detail="Car not found")
+        return car
+
 
 def get_car(car_id: int) -> ResponseCarDTO:
     with Session() as session:

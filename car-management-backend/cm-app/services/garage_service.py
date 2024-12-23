@@ -15,11 +15,18 @@ def get_garages_by_ids(garage_ids:list[int],outer_session:ORMSession = None)\
     else:
         return outer_session.query(Garage).filter(Garage.id.in_(garage_ids)).all()
 
-def get_garage_by_id(id:int, session: ORMSession):
-    garage = session.get(Garage,id)
-    if garage is None:
-        raise HTTPException(status_code=404, detail="Garage not found!")
-    return garage
+def get_garage_by_id(id:int, session: ORMSession = None):
+    if session is None:
+        with Session() as session:
+            garage = session.get(Garage, id)
+            if garage is None:
+                raise HTTPException(status_code=404, detail="Garage not found!")
+            return garage
+    else:
+        garage = session.get(Garage, id)
+        if garage is None:
+            raise HTTPException(status_code=404, detail="Garage not found!")
+        return garage
 
 def get_garage(id: int) ->ResponseGarageDTO:
     with Session() as session, session.begin():
