@@ -24,6 +24,6 @@ class UpdateGarageDTO(BaseModel):
 
 class GarageDailyAvailabilityReportDTO(BaseModel):
     reportDate:date = Field(None, alias="date") # Using 'date' as the field name needs to be with alias
-    # or it will return FieldInfo build error because the 'date' is used by pydantic 
+    # or it will return FieldInfo build error because the 'date' is used by pydantic
     requests: int = Field(None)
     availableCapacity:int = Field(None)

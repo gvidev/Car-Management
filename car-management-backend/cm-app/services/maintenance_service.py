@@ -1,12 +1,15 @@
-from datetime import date
+from calendar import isleap
+from datetime import date, datetime, timedelta
 from typing import Optional
 
 from dns.e164 import query
 from fastapi import HTTPException
 from pydantic import BaseModel
+from sqlalchemy import func
 from sqlalchemy.orm import Session as ORMSession
 
-from dtos.maintenance_dtos import ResponseMaintenanceDTO, UpdateMaintenanceDTO, CreateMaintenanceDTO
+from dtos.maintenance_dtos import ResponseMaintenanceDTO, UpdateMaintenanceDTO, CreateMaintenanceDTO, \
+    MonthlyRequestsReportDTO, YearMonth
 from repo.databaseConfig import Session
 from repo.models import Maintenance
 from services.car_service import get_car_by_id
@@ -86,16 +89,69 @@ def create_maintenance(maintenance: CreateMaintenanceDTO)\
         return map_maintenance_to_response(new_maintenance)
 
 
-def maintenances_with_start_to_end_date(start_date, end_date, garage_id, session):
-    query = session.query(Maintenance)
-    query = query.filter(Maintenance.scheduledDate.date() >= start_date)
-    query = query.filter(Maintenance.scheduledDate.date() <= end_date)
-    query = query.filter(Maintenance.garage_id == garage_id)
-    maintenances = query.all()
-    return maintenances
 
-def get_maintenance_monthly_requests_report(garageId,startMonth,endMonth):
-    pass
+def get_maintenance_monthly_requests_report(garageId:int,startMonth:str,endMonth:str)\
+        -> list[MonthlyRequestsReportDTO]:
+    startMonth = datetime.strptime(startMonth, "%Y-%m").date()
+    endMonth = (datetime.strptime(endMonth, "%Y-%m") + timedelta(days=31)).replace(day=1) - timedelta(days=1)
+    endMonth = endMonth.date()
+    with Session() as session:
+        #query that get count of request per month
+        results = (
+            session.query(
+                func.strftime('%Y-%m', Maintenance.scheduledDate).label("year_month"),
+                func.count(Maintenance.id).label("requests"),
+            ).filter(
+                Maintenance.garage_id == garageId,
+                func.date(Maintenance.scheduledDate) >= startMonth,
+                func.date(Maintenance.scheduledDate) <= endMonth,
+            ).group_by(func.strftime('%Y-%m', Maintenance.scheduledDate))
+             .order_by(func.strftime('%Y-%m', Maintenance.scheduledDate))
+            .all()
+        )
+
+        if not results:
+            raise HTTPException(status_code=404, detail="No results")
+
+        monthly_requests_report = []
+        # going from start month to end month
+        current_month = startMonth
+        while current_month <= endMonth:
+            is_found = False
+
+            for result in results:
+                year_month = result.year_month
+                if current_month.strftime('%Y-%m') == year_month:
+                    monthly_requests_report.append({
+                        "yearMonth": {
+                            "year": current_month.year,
+                            "month": current_month.strftime("%B").upper(),
+                            "leapYear": isleap(current_month.year),
+                            "monthValue": current_month.month,
+                        },
+                        "requests": result.requests
+                })
+
+                    is_found = True
+                    break
+
+            if not is_found:
+                monthly_requests_report.append({
+                    "yearMonth": {
+                    "year": current_month.year,
+                    "month": current_month.strftime("%B").upper(),
+                    "leapYear": isleap(current_month.year),
+                    "monthValue": current_month.month,
+                },
+                "requests": 0
+            })
+
+            if current_month.month < 12:
+                current_month = current_month.replace(month=current_month.month + 1)
+            else:
+                current_month = current_month.replace(year=current_month.year + 1, month=1)
+
+        return monthly_requests_report
 
 
 def is_garage_spaces_full(garage_id:int, scheduled_date:date, session:ORMSession) -> bool:

@@ -1,4 +1,4 @@
-from datetime import date
+from datetime import date, datetime
 from typing import Annotated
 
 from fastapi import APIRouter, Query
@@ -10,6 +10,9 @@ from services.maintenance_service import *
 
 maintenance_router = APIRouter()
 
+@maintenance_router.get("/monthlyRequestsReport", response_model=list[MonthlyRequestsReportDTO])
+async def maintenance_monthly_requests_report(garageId:int,startMonth:str,endMonth:str):
+     return get_maintenance_monthly_requests_report(garageId,startMonth,endMonth)
 
 @maintenance_router.get("/{id}", response_model=ResponseMaintenanceDTO)
 async def get_single_maintenance(id: int):
@@ -32,6 +35,3 @@ async def create_new_maintenance(maintenance: CreateMaintenanceDTO):
      return create_maintenance(maintenance)
 
 
-@maintenance_router.get("/monthlyRequestsReport", response_model=MonthlyRequestsReportDTO)
-async def get_daily_availability_report(garageId:int,startMonth:date,endMonth:date):
-     return get_maintenance_monthly_requests_report(garageId,startMonth,endMonth)

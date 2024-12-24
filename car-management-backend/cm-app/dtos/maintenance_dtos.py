@@ -23,7 +23,12 @@ class ResponseMaintenanceDTO(BaseModel):
      garageId:int = Field(None)
      garageName:str = Field(None)
 
+class YearMonth(BaseModel):
+    year:int = Field(None)
+    month:str = Field(None)
+    leapYear:bool = Field(None)
+    monthValue:int = Field(None)
 
 class MonthlyRequestsReportDTO(BaseModel):
-     yearMonth:list = Field(None)
+     yearMonth:YearMonth = Field(None)
      requests:int = Field(None)
