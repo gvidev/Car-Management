@@ -55,6 +55,7 @@ def delete_maintenance(id:int):
         maintenance = get_maintenance_by_id(id, session)
         session.delete(maintenance)
         session.commit()
+        return True
 
 
 

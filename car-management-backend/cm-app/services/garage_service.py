@@ -74,6 +74,7 @@ def delete_garage(id: int) -> bool:
     with Session() as session, session.begin():
         garage = get_garage_by_id(id, session)
         session.delete(garage)
+        session.commit()
         return True
 
 def get_garage_daily_availability(garage_id:int, start_date:date, end_date:date)\
@@ -114,14 +115,6 @@ def map_garage_to_response(garage: Garage) -> ResponseGarageDTO:
         location=garage.location,
         capacity=garage.capacity,
         city=garage.city,
-    )
-
-def map_update_to_garage(garage: UpdateGarageDTO) -> Garage:
-    return Garage(
-        name = garage.name,
-        location = garage.location,
-        capacity = garage.capacity,
-        city = garage.city
     )
 
 def map_create_to_garage(garage: UpdateGarageDTO) -> Garage:

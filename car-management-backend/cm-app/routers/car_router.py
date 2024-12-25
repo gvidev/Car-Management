@@ -9,7 +9,6 @@ from services.car_service import get_car, update_car, delete_car, get_cars, crea
 car_router  = APIRouter()
 
 
-
 @car_router.get("/{id}", response_model=ResponseCarDTO)
 async def get_single_car(id: int):
      return get_car(id)

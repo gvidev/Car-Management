@@ -30,9 +30,9 @@ class Garage(Base):
     location = Column(String)
     city = Column(String, index=True)
     capacity = Column(Integer)
+
     # reference to car class and the union(many-to_many) table car_garages
     cars = relationship("Car", secondary="car_garages", back_populates="garages",lazy="joined",passive_deletes=True)
-
     maintenances = relationship("Maintenance", back_populates="garage", cascade="all, delete")
 
 class Car(Base):
@@ -43,9 +43,9 @@ class Car(Base):
     model = Column(String)
     productionYear = Column(Integer, index=True)
     licensePlate = Column(String, unique=True)
+
     # reference to garage class and the union(many-to_many) table car_garages
     garages = relationship("Garage",secondary="car_garages",lazy="joined", back_populates="cars",passive_deletes=True)
-
     maintenances = relationship("Maintenance", back_populates="car", cascade="all, delete")
 
 class Maintenance(Base):

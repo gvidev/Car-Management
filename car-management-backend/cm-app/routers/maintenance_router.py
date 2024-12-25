@@ -22,7 +22,7 @@ async def get_single_maintenance(id: int):
 async def update_single_maintenance(id: int, maintenance: UpdateMaintenanceDTO):
      return update_maintenance(id,maintenance)
 
-@maintenance_router.delete("/{id}")
+@maintenance_router.delete("/{id}", response_model=bool)
 async def delete_single_maintenance(id:int):
      return delete_maintenance(id)
 

@@ -91,6 +91,7 @@ def map_create_to_car(car: CreateCarDTO) -> Car:
     newCar.garages = get_garages_by_ids(garage_ids=car.garageIds)
     return newCar
 
+
 def map_car_to_response(car: Car) -> ResponseCarDTO:
     return ResponseCarDTO(
         id=car.id,
