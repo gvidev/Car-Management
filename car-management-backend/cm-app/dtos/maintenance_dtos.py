@@ -29,6 +29,7 @@ class YearMonth(BaseModel):
     leapYear:bool = Field(None)
     monthValue:int = Field(None)
 
+
 class MonthlyRequestsReportDTO(BaseModel):
-     yearMonth:YearMonth = Field(None)
+     yearMonth:YearMonth= Field(None)
      requests:int = Field(None)

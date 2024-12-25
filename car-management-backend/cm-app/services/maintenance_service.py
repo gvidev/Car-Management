@@ -4,6 +4,7 @@ from typing import Optional
 
 from dns.e164 import query
 from fastapi import HTTPException
+from httpcore import request
 from pydantic import BaseModel
 from sqlalchemy import func
 from sqlalchemy.orm import Session as ORMSession
@@ -122,29 +123,30 @@ def get_maintenance_monthly_requests_report(garageId:int,startMonth:str,endMonth
             for result in results:
                 year_month = result.year_month
                 if current_month.strftime('%Y-%m') == year_month:
-                    monthly_requests_report.append({
-                        "yearMonth": {
-                            "year": current_month.year,
-                            "month": current_month.strftime("%B").upper(),
-                            "leapYear": isleap(current_month.year),
-                            "monthValue": current_month.month,
-                        },
-                        "requests": result.requests
-                })
+                    monthly_requests_report.append(
+                        MonthlyRequestsReportDTO(
+                            yearMonth=YearMonth(
+                                year=current_month.year,
+                                month=current_month.strftime("%B").upper(),
+                                leapYear=isleap(current_month.year),
+                                monthValue=current_month.month,
+                            ),
+                            requests = result.requests
+                        ))
 
                     is_found = True
                     break
 
             if not is_found:
-                monthly_requests_report.append({
-                    "yearMonth": {
-                    "year": current_month.year,
-                    "month": current_month.strftime("%B").upper(),
-                    "leapYear": isleap(current_month.year),
-                    "monthValue": current_month.month,
-                },
-                "requests": 0
-            })
+                monthly_requests_report.append(MonthlyRequestsReportDTO(
+                            yearMonth=YearMonth(
+                                year=current_month.year,
+                                month=current_month.strftime("%B").upper(),
+                                leapYear=isleap(current_month.year),
+                                monthValue=current_month.month,
+                            ),
+                            requests = 0
+                        ))
 
             if current_month.month < 12:
                 current_month = current_month.replace(month=current_month.month + 1)
