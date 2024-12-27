@@ -113,7 +113,7 @@ def get_maintenance_monthly_requests_report(garageId:int,startMonth:str,endMonth
         )
 
         if not results:
-            raise HTTPException(status_code=404, detail="No results")
+            raise HTTPException(status_code=404, detail="No results found")
 
         monthly_requests_report = []
         # going from start month to end month

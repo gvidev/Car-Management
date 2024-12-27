@@ -14,6 +14,7 @@ app = FastAPI(lifespan=lifespan)
 # added because of the cross-origin access is blocked
 # by third party client
 origins = ["http://192.168.100.3:3000",
+            "http://localhost:3000",
             "http://localhost:8088", ]
 
 app.add_middleware(
@@ -26,7 +27,7 @@ app.add_middleware(
 
 @app.get("/")
 async def root(request: Request):
-    return {"message": "Hello API user with " + request.client.host}
+    return {"message": "Hello API user with host -> " + request.client.host}
 
 
 app.include_router(garage_router,prefix="/garages", tags=["garage-controller"])

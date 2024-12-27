@@ -22,14 +22,24 @@ def get_car_by_id(car_id:int, session: ORMSession = None):
     if session is None:
         with Session() as session:
             car = session.get(Car, car_id)
-            if car is None:
-                raise HTTPException(status_code=404, detail="Car not found")
-            return car
     else:
         car = session.get(Car, car_id)
-        if car is None:
-            raise HTTPException(status_code=404, detail="Car not found")
+
+    if car is None:
+        raise HTTPException(status_code=404, detail="Car not found")
+    return car
+
+
+def get_car_by_licence_plate(licence_plate:str, session: ORMSession = None):
+    if session is None:
+        with Session() as session:
+            car = session.query(Car).filter(Car.licensePlate == licence_plate).first()
+    else:
+        car = session.query(Car).filter(Car.licensePlate == licence_plate).first()
+
+    if car is not None:
         return car
+    return None
 
 
 def get_car(car_id: int) -> ResponseCarDTO:
@@ -44,7 +54,12 @@ def update_car(car_id:int , car: UpdateCarDTO) -> ResponseCarDTO:
         newCar.model = car.model
         newCar.productionYear = car.productionYear
         newCar.licensePlate = car.licensePlate
-        newCar.garages = get_garages_by_ids(car.garageIds,session)
+
+        if car.garageIds is None:
+            newCar.garages = []
+        else:
+            newCar.garages = get_garages_by_ids(car.garageIds,session)
+
         session.commit()
         session.refresh(newCar)
 
@@ -59,10 +74,16 @@ def delete_car(car_id:int) -> bool:
 def create_car(car: CreateCarDTO) -> ResponseCarDTO:
     newCar = map_create_to_car(car)
     with Session() as session:
-        session.add(newCar)
-        session.commit()
-        session.refresh(newCar)
-    return map_car_to_response(newCar)
+        carExist = get_car_by_licence_plate(car.licensePlate, session)
+        if carExist is None:
+            session.add(newCar)
+            session.commit()
+            session.refresh(newCar)
+            return map_car_to_response(newCar)
+        else:
+            raise HTTPException(status_code=409, detail="There is already car with this LICENCE PLATE")
+
+
 
 
 def get_cars(filters: CarsFilter) -> list[ResponseCarDTO]:
