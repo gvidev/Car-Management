@@ -1,5 +1,5 @@
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.middleware.cors import CORSMiddleware
 from repo.databaseConfig import engine
 from repo.models import Base
@@ -25,8 +25,8 @@ app.add_middleware(
 )
 
 @app.get("/")
-async def root():
-    return {"message": "Hello Mundo"}
+async def root(request: Request):
+    return {"message": "Hello API user with " + request.client.host}
 
 
 app.include_router(garage_router,prefix="/garages", tags=["garage-controller"])

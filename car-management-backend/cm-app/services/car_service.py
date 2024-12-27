@@ -10,6 +10,8 @@ from repo.models import Car, Garage, CarGarage
 from services.garage_service import map_garage_to_response, get_garage, get_garages_by_ids, get_garage_by_id
 
 
+
+
 class CarsFilter(BaseModel):
     carMake: Optional[str] = None
     garageId: Optional[int] = None
